@@ -5,6 +5,8 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 import datetime as dt
+import pandas as pd
+
 
 from flask import Flask, jsonify
 
@@ -99,13 +101,13 @@ def tobs():
     #Returns jsonified  
     return jsonify(all_tobs)
 
-@app.route("/api/v1.0/<start>")
-def start():
+@app.route("/api/v1.0/start/<start>")
+def start(start):
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
     # Query the min, max and avg temperature 
-    start = '2017-06-30'
+   
     results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
             filter(Measurement.date >= start).all()
     session.close()
@@ -114,14 +116,13 @@ def start():
     return jsonify(results)
 
 @app.route("/api/v1.0/<Begin>/<end>")
-def begin_end():
+def begin_end(begin, end):
       
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
     # Query the min, max and avg temperature 
-    begin = '2017-06-30'
-    end = '2017-07-30'    
+    
     results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
             filter(Measurement.date >= begin).filter(Measurement.date <= end).all()
     session.close()
