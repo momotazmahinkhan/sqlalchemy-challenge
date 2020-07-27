@@ -4,6 +4,7 @@ import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
+import datetime as dt
 
 from flask import Flask, jsonify
 
@@ -51,7 +52,7 @@ def precipitation():
     last_date = session.query(Measurement.date).order_by(Measurement.date.desc()).first()
     query_date = dt.datetime.strptime(last_date[0], '%Y-%m-%d') - dt.timedelta(days=365)
 
-    results = session.query(Measurement.date, Measurement.prcp, Measurement.station)./
+    results = session.query(Measurement.date, Measurement.prcp, Measurement.station).\
                     filter (Measurement.date >query_date).all()
 
     session.close()
@@ -85,7 +86,8 @@ def tobs():
 
     """Return the most active stations"""
     # Query the most active station and temperature 
-    
+    last_date = session.query(Measurement.date).order_by(Measurement.date.desc()).first()
+    query_date = dt.datetime.strptime(last_date[0], '%Y-%m-%d') - dt.timedelta(days=365)
     results = session.query(Measurement.station, Measurement.tobs, Measurement.date ).\
         filter(Measurement.station == 'USC00519281').filter (Measurement.date >query_date).all()
     
@@ -95,7 +97,7 @@ def tobs():
     all_tobs = list(np.ravel(results))
 
     #Returns jsonified  
-    return jsonify(all_station)
+    return jsonify(all_tobs)
 
 @app.route("/api/v1.0/<start>")
 def start():
@@ -103,7 +105,7 @@ def start():
     session = Session(engine)
 
     # Query the min, max and avg temperature 
-    
+    start = '2017-06-30'
     results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
             filter(Measurement.date >= start).all()
     session.close()
@@ -113,22 +115,16 @@ def start():
 
 @app.route("/api/v1.0/<Begin>/<end>")
 def begin_end():
+      
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
     # Query the min, max and avg temperature 
-    
-    results = # Create our session (link) from Python to the DB
-    session = Session(engine)
-
-    # Query the min, max and avg temperature 
-    
+    begin = '2017-06-30'
+    end = '2017-07-30'    
     results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
             filter(Measurement.date >= begin).filter(Measurement.date <= end).all()
     session.close()
-
-    #Returns jsonified  
-    return jsonify(results)
 
     #Returns jsonified  
     return jsonify(results)
