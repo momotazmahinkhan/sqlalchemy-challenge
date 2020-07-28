@@ -102,21 +102,21 @@ def tobs():
     return jsonify(all_tobs)
 
 @app.route("/api/v1.0/start/<start>")
-def start(start):
+def start(start_date):
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
     # Query the min, max and avg temperature 
    
     results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-            filter(Measurement.date >= start).all()
+            filter(Measurement.date >= start_date).all()
     session.close()
 
     #Returns jsonified  
     return jsonify(results)
 
 @app.route("/api/v1.0/<Begin>/<end>")
-def begin_end(begin, end):
+def begin_end(start_date, end_date):
       
     # Create our session (link) from Python to the DB
     session = Session(engine)
@@ -124,7 +124,7 @@ def begin_end(begin, end):
     # Query the min, max and avg temperature 
     
     results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-            filter(Measurement.date >= begin).filter(Measurement.date <= end).all()
+            filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
     session.close()
 
     #Returns jsonified  
